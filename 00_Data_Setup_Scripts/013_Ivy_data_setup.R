@@ -1,5 +1,5 @@
 # Shiny Swimming App
-# File: 01_AmericaEast_Data_Collect
+# File: 013_Ivy_Data_Collect
 # Sean Warlick
 # February 10, 2016
 ###############################################################################
@@ -105,3 +105,4 @@ data_collection('Ivy League', date_param$mondays[19], date_param$sundays[19], co
 data_collection('Ivy League', date_param$mondays[20], date_param$sundays[20], con)
 data_collection('Ivy League', date_param$mondays[21], date_param$sundays[21], con)
 data_collection('Ivy League', date_param$mondays[22], date_param$sundays[22], con)
+data_collection('Ivy League', date_param$mondays[23], date_param$sundays[23], con)

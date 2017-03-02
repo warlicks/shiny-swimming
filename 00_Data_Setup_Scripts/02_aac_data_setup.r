@@ -105,3 +105,4 @@ data_collection('American Athletic Conf', date_param$mondays[19], date_param$sun
 data_collection('American Athletic Conf', date_param$mondays[20], date_param$sundays[20], con)
 data_collection('American Athletic Conf', date_param$mondays[21], date_param$sundays[21], con)
 data_collection('American Athletic Conf', date_param$mondays[22], date_param$sundays[22], con)
+data_collection('American Athletic Conf', date_param$mondays[23], date_param$sundays[23], con)
