@@ -7,4 +7,5 @@ Creating an shiny application for college swimming results.
 * [x] Finish Inital Data Load
 * [ ] Set up weekly update script
 * [ ] Validate initial data load
-    + Check on how USAS handles the Metropolitan swimmin conference.  It has teams from all 3 divisions
+    + Check on how USAS handles the Metropolitan swimmin conference.  It has teams from all 3 divisions.  
+    + Check on the event table.  
