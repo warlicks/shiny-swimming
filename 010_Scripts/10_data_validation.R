@@ -47,3 +47,17 @@ usas_confernces %>% anti_join(., confernce_results)
 ## the table by running swim_db_tables().  This potentially could be a problem
 ## in the swimR package.  
 
+swim_db_tables(con)
+
+## insert_event is not in the build of swimR that I'm currently using. I need 
+## to investigate this further. 
+
+swimR:::insert_event(con)
+
+# Check on qualifying table
+###############################################################################
+## The qualifying table has been populated multiple times.  The 
+## insert_qualifying() or the table structure needs to be fixed for the future.
+## For the moment I deleted the contents and will now repopulate.  
+
+swimR:::insert_qualifying(con)
