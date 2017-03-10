@@ -12,7 +12,7 @@ library(swimR)
 
 # Set Up File Paths
 data_path <- '~/Documents/Github/shiny-swimming/data_download'
-db_name <- './data/swim_data_base.sqlite'
+db_name <- '~/Documents/Github/shiny-swimming/data/swim_data_base.sqlite'
 
 # Set up database connection
 driver <- RSQLite::SQLite()
@@ -57,11 +57,14 @@ data_collection <- function(conference, start, end, con) {
 
 # Set Up Dates 
 ###############################################################################
+## Set up for run on Thrusday.
 monday <- as.character(Sys.Date() - 10)
 sunday <- as.character(Sys.Date() - 4)
 
 # Data Collection 
 ###############################################################################
+## The Sun Belt Conference and the Metropolitan swimming conference do not show up when we run top times for them. As a result they are not included in the weekly results.  
+
 data_collection('ACC (Atlantic Coast)', monday, sunday, con)
 data_collection('America East', monday, sunday, con)
 data_collection('American Athletic Conf', monday, sunday, con)
