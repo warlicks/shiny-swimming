@@ -19,12 +19,12 @@ driver <- RSQLite::SQLite()
 con <- DBI::dbConnect(driver, db_name)
 
 # Set Up Function To Do Data Collection
-
 data_collection <- function(conference, start, end, con) {
 	print(paste('Fetching data for', 
-					    conference, 
-					    'during week of', 
-					    start))
+			    conference, 
+			    'during the week of', 
+				start)
+	)
 	
 	meet_results <- individual_swims(conference,
 									start_date = start,
@@ -52,14 +52,19 @@ data_collection <- function(conference, start, end, con) {
 				'during the week of',
 				start))
 	}
-
 }
+
+# Start Selenium Server
+server <- start_selenium(dir = "~")
 
 # Set Up Dates 
 ###############################################################################
 ## Set up for run on Thrusday.
-monday <- as.character(Sys.Date() - 10)
-sunday <- as.character(Sys.Date() - 4)
+#monday <- as.character(Sys.Date() - 10)
+#sunday <- as.character(Sys.Date() - 4)
+
+monday <- '2017-03-06'
+sunday <- '2017-03-12'
 
 # Data Collection 
 ###############################################################################
@@ -91,3 +96,5 @@ data_collection('The Patriot League', monday, sunday, con)
 data_collection('The Summit League', monday, sunday, con)
 data_collection('Western Athletic Conf', monday, sunday, con)
 
+# Shut Down Server
+server$stop()
