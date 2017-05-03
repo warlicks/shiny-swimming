@@ -5,6 +5,7 @@
 # http://shiny.rstudio.com
 #
 
+library(swimR)
 library(shiny)
 
 db_name <- '~/Documents/Github/shiny-swimming/data/swim_data_base.sqlite'
@@ -13,12 +14,17 @@ db_name <- '~/Documents/Github/shiny-swimming/data/swim_data_base.sqlite'
 driver <- RSQLite::SQLite()
 con <- DBI::dbConnect(driver, db_name)
 
+# Get List of Team Names
+teams <- DBI::dbReadTable(con, 'TEAM')
+teams <- c(NULL, teams$TEAM_NAME)
+
 shinyServer(function(input, output) {
 	output$top_times_table <- renderDataTable({
-		report_top_times(con, 
-                 team_name = 'Iowa', 
-                 gender = 'M',
-                 multiple_results = FALSE)	
+		report_top_times(con,
+                 team_name = input$team,
+                 gender = input$gender,
+                 event = input$event,
+                 multiple_results = FALSE)
 	})
   #  output$distPlot <- renderPlot({
 

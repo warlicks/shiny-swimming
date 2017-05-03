@@ -8,6 +8,19 @@
 library(shiny)
 library(shinydashboard)
 
+db_name <- '~/Documents/Github/shiny-swimming/data/swim_data_base.sqlite'
+
+# Set up database connection
+driver <- RSQLite::SQLite()
+con <- DBI::dbConnect(driver, db_name)
+
+# Get List of Team Names
+teams <- DBI::dbReadTable(con, 'TEAM')
+
+# Get List of Events
+event_df <- DBI::dbReadTable(con, 'EVENT')
+events <- c('All', event_df$EVENT)
+
 shinyUI(
     fluidPage(
 
@@ -17,11 +30,22 @@ shinyUI(
   # Sidebar with a slider input for number of bins
     sidebarLayout(
       sidebarPanel(
-        sliderInput("bins",
-                  "Number of bins:",
-                  min = 1,
-                  max = 50,
-                  value = 30)
+        selectInput('team',
+                    'Select Team',
+                    as.list(teams$TEAM_NAME),
+                    selected = NULL,
+                    multiple = TRUE),
+        radioButtons('gender',
+                      'Select Athlete Gender',
+                      c('Both' = 'Both',
+                        'Men' = 'M',
+                        'Women' = 'F')),
+        selectInput('event',
+                    'Select Event(s)',
+                    as.list(events),
+                    selected = 'ALL',
+                    multiple = TRUE)
+
       ),
 
     # Show a plot of the generated distribution
