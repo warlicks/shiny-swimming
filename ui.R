@@ -1,57 +1,75 @@
 
-# This is the user-interface definition of a Shiny web application.
-# You can find out more about building applications with Shiny here:
-#
-# http://shiny.rstudio.com
-#
 
+# Set Up R Enviroment ####
+################################################################################
+################################################################################
+
+# Libary Load
+library(dplyr)
+library(magrittr)
 library(shiny)
 library(shinydashboard)
 
+# Set Database Path
 db_name <- '~/Documents/Github/shiny-swimming/data/swim_data_base.sqlite'
 
 # Set up database connection
 driver <- RSQLite::SQLite()
 con <- DBI::dbConnect(driver, db_name)
 
-# Get List of Team Names
+# Get List of Team Names For Input
 teams <- DBI::dbReadTable(con, 'TEAM')
+teams <- teams %>% arrange(TEAM_NAME)
 
-# Get List of Events
+# Get List of Events For Input
 event_df <- DBI::dbReadTable(con, 'EVENT')
 events <- c('All', event_df$EVENT)
 
-shinyUI(
-    fluidPage(
+# Dashboard Layout ####
+################################################################################
+################################################################################
+dashboardPage(
 
-  # Application title
-    titlePanel("Old Faithful Geyser Data"),
+# Dashboard Header ####
+################################################################################
+    dashboardHeader(title = 'College Swimming'),
 
-  # Sidebar with a slider input for number of bins
-    sidebarLayout(
-      sidebarPanel(
+## Dashboard Sidebar ####
+################################################################################
+    dashboardSidebar(
         selectInput('team',
-                    'Select Team',
-                    as.list(teams$TEAM_NAME),
-                    selected = NULL,
-                    multiple = TRUE),
+                     'Select Team',
+                     as.list(teams$TEAM_NAME),
+                     selected = teams$TEAM_NAME[1],
+                     multiple = FALSE),
         radioButtons('gender',
-                      'Select Athlete Gender',
-                      c('Both' = 'Both',
-                        'Men' = 'M',
-                        'Women' = 'F')),
-        selectInput('event',
-                    'Select Event(s)',
-                    as.list(events),
-                    selected = 'ALL',
-                    multiple = TRUE)
-
-      ),
-
-    # Show a plot of the generated distribution
-    mainPanel(
-      dataTableOutput("top_times_table")
-      #plotOutput("distPlot")
+                     'Select Athlete Gender',
+                     c('Both' = 'Both',
+                       'Men' = 'M',
+                       'Women' = 'F')),
+         selectInput('event',
+                     'Select Event(s)',
+                      as.list(events),
+                     selected = 'All',
+                     multiple = TRUE)
+    ),
+# Dashboard Body ####
+################################################################################
+    dashboardBody(
+        fluidRow(
+            valueBoxOutput("menbox"),
+            valueBox(1, 'A Cut', icon = icon('clock-o', lib = 'font-awesome')),
+            valueBox(2, 'B Cut', icon = icon('clock-o', lib = 'font-awesome'))
+        ),
+        fluidRow(
+            valueBoxOutput("womenbox"),
+            valueBox(1, 'A Cut', icon = icon('clock-o', lib = 'font-awesome')),
+            valueBox(2, 'B Cut', icon = icon('clock-o', lib = 'font-awesome'))
+        ),
+        fluidRow(
+            box(dataTableOutput("top_times_table"),
+                collapsible = TRUE,
+                width = 12)
+        )
     )
-  )
-))
+)
