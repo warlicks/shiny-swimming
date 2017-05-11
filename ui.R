@@ -58,14 +58,16 @@ dashboardPage(
     dashboardBody(
         fluidRow(
             valueBoxOutput("menbox"),
-            valueBox(1, 'A Cut', icon = icon('clock-o', lib = 'font-awesome')),
-            valueBox(2, 'B Cut', icon = icon('clock-o', lib = 'font-awesome'))
+            valueBoxOutput("menA"),
+            valueBoxOutput("menB")
         ),
+
         fluidRow(
             valueBoxOutput("womenbox"),
-            valueBox(1, 'A Cut', icon = icon('clock-o', lib = 'font-awesome')),
-            valueBox(2, 'B Cut', icon = icon('clock-o', lib = 'font-awesome'))
+            valueBoxOutput("womenA"),
+            valueBoxOutput("womenB")
         ),
+
         fluidRow(
             box(dataTableOutput("top_times_table"),
                 collapsible = TRUE,
