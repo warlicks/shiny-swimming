@@ -8,7 +8,6 @@
 library(swimR)
 library(shiny)
 library(dplyr)
-library(magrittr)
 
 db_name <- '~/Documents/Github/shiny-swimming/data/swim_data_base.sqlite'
 
