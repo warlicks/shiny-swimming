@@ -25,10 +25,6 @@ teams <- teams %>% arrange(TEAM_NAME)
 event_df <- DBI::dbReadTable(con, 'EVENT')
 events <- c('All', event_df$EVENT)
 
-# Dashboard Layout ####
-################################################################################
-################################################################################
-
 
 # Dashboard Header ####
 ################################################################################
@@ -41,7 +37,8 @@ side_bar <- dashboardSidebar(
     sidebarMenu(
         menuItem('NCAA', tabName = "ncaa"),
         menuItem('Team Results', tabName = 'team'),
-        menuItem('Individual Results', tabName = 'individual')
+        menuItem('Individual Results', tabName = 'individual'),
+        menuItem('College Swimming News', tabName = 'swim_news')
     ),
 
     h4('Filters'),
@@ -60,38 +57,58 @@ side_bar <- dashboardSidebar(
                 as.list(events),
                 selected = 'All',
                 multiple = TRUE)
+
     )
 # Dashboard Body ####
 ################################################################################
 body <- dashboardBody(
+
     tabItems(
+        # Tab for NCAA ITEMS
         tabItem(tabName = 'ncaa',
             h2('Filler Content')
         ),
+        # Tab for Team
         tabItem(tabName = 'team',
+            # Men's Wigits
             fluidRow(
                 valueBoxOutput("menbox"),
                 valueBoxOutput("menA"),
                 valueBoxOutput("menB")
             ),
-
+            # Women's Wigits
             fluidRow(
                 valueBoxOutput("womenbox"),
                 valueBoxOutput("womenA"),
                 valueBoxOutput("womenB")
             ),
-
+            # Table of Top Times
             fluidRow(
                 box(dataTableOutput("top_times_table"),
                     collapsible = TRUE,
                     width = 12)
             )
         ),
-
+        # Tab For Individual Swims
         tabItem(tabName = 'individual',
             h2('Filler Content')
+        ),
+        # Tab for News
+        tabItem(tabName = 'swim_news',
+            fluidPage(
+                    tags$iframe(width="550",
+                                height="500",
+                                src="https://swimswam.com/iframe-embed/?cat=18",
+                                frameborder="0",
+                                scrolling="auto"),
+                    tags$a(href = "https://swimswam.com/?cat=18",
+                           style="font-size:10px;color:#CCC;",
+                           tags$br("College Swimming News by SwimSwam")
+                           )
+                )
         )
     )
 )
-
+# Combine dashboard elements into a page
+################################################################################
 dashboardPage(header, side_bar, body, skin = 'black')
