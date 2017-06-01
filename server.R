@@ -18,6 +18,7 @@ con <- DBI::dbConnect(driver, db_name)
 # Define Server Functions
 shinyServer( function(input, output) {
 
+    # Create A Table of Time Times
 	output$top_times_table <- renderDataTable({
 		report_top_times(con,
                  team_name = input$team,
@@ -33,6 +34,10 @@ shinyServer( function(input, output) {
 
 	})
 
+	# Create Athlete Counts By Team
+    ############################################################################
+
+	## Men
 	output$menbox <- renderValueBox({
 	    men_count <- athlete_count(con,
 	                               team_name = input$team) %>%
@@ -48,6 +53,7 @@ shinyServer( function(input, output) {
 	    )
 	})
 
+	## Women
 	output$womenbox <- renderValueBox({
 	    women_count <- athlete_count(con,
 	                               team_name = input$team) %>%
@@ -57,7 +63,10 @@ shinyServer( function(input, output) {
 	             'Women',
 	             icon = icon('female', lib = 'font-awesome'))
 	})
+    # Create Counts of NCAA Qualifers
+	############################################################################
 
+	## Men's A Qualifers
 	output$menA <- renderValueBox({
 	    men_acut <- report_ncaa_qualifiers(con,
 	                                         team_name = input$team) %>%
@@ -73,6 +82,7 @@ shinyServer( function(input, output) {
 	             icon = icon('clock-o', lib = 'font-awesome'))
 	})
 
+	## Men's B Qualifers
 	output$menB <- renderValueBox({
 	    men_bcut <- report_ncaa_qualifiers(con,
 	                                         team_name = input$team) %>%
@@ -87,6 +97,8 @@ shinyServer( function(input, output) {
 	             'B Cuts',
 	             icon = icon('clock-o', lib = 'font-awesome'))
 	})
+
+	## Women's A Cuts
 	output$womenA <- renderValueBox({
 	    women_acut <- report_ncaa_qualifiers(con,
 	                                         team_name = input$team) %>%
@@ -102,6 +114,7 @@ shinyServer( function(input, output) {
 	             icon = icon('clock-o', lib = 'font-awesome'))
 	})
 
+	## Women's B Cuts
 	output$womenB <- renderValueBox({
 	    women_bcut <- report_ncaa_qualifiers(con,
 	                                         team_name = input$team) %>%
@@ -115,6 +128,35 @@ shinyServer( function(input, output) {
 	    valueBox(women_bcut$cnt,
 	             'B Cuts',
 	             icon = icon('clock-o', lib = 'font-awesome'))
+	})
+
+	# Create Plot of Depth By Event
+	############################################################################
+	output$event_depth <- renderPlot({
+	    event_depth(con, input$team, input$gender) %>%
+	        ggplot(aes(EVENT, ATHLETE_COUNT, fill = GENDER)) +
+	        geom_col( position = 'dodge') +
+	        labs(x = 'Event', y = 'Number of Athletes') +
+	        theme(axis.text.x=element_text(angle = 45))+
+	        scale_fill_discrete(breaks = c('M', 'F'),
+	                            labels = c('Men', 'Women'),
+	                            guide = guide_legend(title = 'Gender'))
+	})
+
+	# Create Plot of Depth By Distance
+	output$distance_depth <- renderPlot({
+	    distance_depth(con, input$team, input$gender) %>%
+	    mutate(DISTANCE = as.numeric((DISTANCE))) %>%
+	    arrange(DISTANCE, GENDER) %>%
+	    ggplot(aes(as.factor(DISTANCE),
+	               `Count(Distinct ATHLETE_ID)`,
+	               fill = GENDER)
+	    ) +
+	    geom_col(position = 'dodge') +
+	    scale_fill_discrete(breaks = c('M', 'F'),
+	                        labels = c('Men', 'Women'),
+	                        guide = guide_legend(title = 'Gender')) +
+	    labs(x = 'Distance', y = 'Number of Athletes')
 	})
 
 })

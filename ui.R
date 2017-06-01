@@ -85,8 +85,16 @@ body <- dashboardBody(
             # Table of Top Times
             fluidRow(
                 box(dataTableOutput("top_times_table"),
-                    collapsible = TRUE,
-                    width = 12)
+                    collapsible = TRUE),
+                tabBox(
+                    tabPanel(title = 'Depth By Event',
+                             plotOutput('event_depth')
+                    ),
+                    tabPanel(title = 'Depth By Distance',
+                              plotOutput('distance_depth')
+                    )
+
+                )
             )
         ),
         # Tab For Individual Swims
