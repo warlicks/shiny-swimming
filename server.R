@@ -8,6 +8,8 @@
 library(swimR)
 library(shiny)
 library(dplyr)
+library(ggplot2)
+library(ggvis)
 
 db_name <- '~/Documents/Github/shiny-swimming/data/swim_data_base.sqlite'
 
@@ -15,8 +17,11 @@ db_name <- '~/Documents/Github/shiny-swimming/data/swim_data_base.sqlite'
 driver <- RSQLite::SQLite()
 con <- DBI::dbConnect(driver, db_name)
 
+# Define Function for Event Rank Tooltip
+
+
 # Define Server Functions
-shinyServer( function(input, output) {
+shinyServer(function(input, output) {
 
     # Create A Table of Time Times
 	output$top_times_table <- renderDataTable({
@@ -144,6 +149,7 @@ shinyServer( function(input, output) {
 	})
 
 	# Create Plot of Depth By Distance
+	##############################################################################
 	output$distance_depth <- renderPlot({
 	    distance_depth(con, input$team, input$gender) %>%
 	    mutate(DISTANCE = as.numeric((DISTANCE))) %>%
@@ -158,5 +164,55 @@ shinyServer( function(input, output) {
 	                        guide = guide_legend(title = 'Gender')) +
 	    labs(x = 'Distance', y = 'Number of Athletes')
 	})
+
+	# Define Plot for Individual Event Rank
+	############################################################################
+    # Gather and manipulate data
+    vis <- reactive({
+	individual_event_ranks <- report_top_times(con,
+                            team_name = input$team,
+                            athlete = input$athlete) %>%
+        ungroup() %>%
+        ## Compute percent of A Cut and Event Rank
+        mutate(percent_acut = (SWIM_TIME_VALUE / A_CUT) * 100,
+               event_rank = min_rank(percent_acut)) %>%
+        arrange(event_rank)
+
+	tootip_fun <- function(x){
+	    if(is.null(x)) return(NULL)
+	    row<-individual_event_ranks[
+	            individual_event_ranks$EVENT_NAME == x$EVENT_NAME,
+                c('SWIM_TIME_TEXT')]
+	    paste0('Best Time: ',
+	           format(row$SWIM_TIME_TEXT),
+	           collapse = "<br/>")
+	}
+
+    # Build Plot
+        individual_event_ranks %>% ggvis(~event_rank,
+                                     ~percent_acut,
+                                     key := ~EVENT_NAME) %>%
+        ## Add Text To Points
+        layer_text(text := ~EVENT_NAME, dx := 10) %>%
+        ## Add Points
+        layer_points(shape := 'square',
+                     size := 200,
+                     fill := 'darkblue') %>%
+        ## Rename Y Axis and Remove Grid Lines
+        add_axis('y',
+                 title = "Percent of NCAA A Standard",
+                 grid = FALSE) %>%
+        ## Reverse Axis
+        scale_numeric('y', reverse = TRUE) %>%
+        ## Reame X Axis, Remove Grid and fewer ticks
+        add_axis('x',
+                 grid = FALSE,
+                 ticks = nrow(individual_event_ranks),
+                 title = 'Event Rank') %>%
+        ## Add Tool Tip
+        add_tooltip(tootip_fun, on = 'hover')
+        })
+        bind_shiny(vis, 'individual_event_rank')
+
 
 })

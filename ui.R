@@ -6,7 +6,7 @@
 
 # Libary Load
 library(dplyr)
-library(magrittr)
+library(ggvis)
 library(shiny)
 library(shinydashboard)
 
@@ -24,6 +24,10 @@ teams <- teams %>% arrange(TEAM_NAME)
 # Get List of Events For Input
 event_df <- DBI::dbReadTable(con, 'EVENT')
 events <- c('All', event_df$EVENT)
+
+# Get List of Athletes For Input Menue
+athlete_df <- DBI::dbReadTable(con, 'ATHLETE')
+athlete_df <- athlete_df %>% arrange(ATHLETE_NAME)
 
 
 # Dashboard Header ####
@@ -56,7 +60,11 @@ side_bar <- dashboardSidebar(
                 'Select Event(s)',
                 as.list(events),
                 selected = 'All',
-                multiple = TRUE)
+                multiple = TRUE),
+    selectInput('athlete',
+                'Select an Athlete',
+                as.list(athlete_df$ATHLETE_NAME),
+                multiple = FALSE)
 
     )
 # Dashboard Body ####
@@ -99,7 +107,9 @@ body <- dashboardBody(
         ),
         # Tab For Individual Swims
         tabItem(tabName = 'individual',
-            h2('Filler Content')
+            fluidPage(
+                ggvisOutput('individual_event_rank')
+            )
         ),
         # Tab for News
         tabItem(tabName = 'swim_news',
